@@ -8,7 +8,7 @@ Pod::Spec.new do |s|
                        DESC
   s.homepage         = 'https://github.com/square1-io/resized-ios'
   s.author           = { 'Roberto Pastor' => 'rober@square1.io' }
-  s.source           = { :git => "https://github.com/square1-io/resized-ios.git", :tag => 's.version.to_s' }
+  s.source           = { :git => "https://github.com/square1-io/resized-ios.git", :tag => '0.1.0' }
   s.platform     = :ios, '7.0'
   s.requires_arc = true
 
