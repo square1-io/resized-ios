@@ -14,8 +14,8 @@ pod 'Resized'
 
 ````
 //Initialize
-ResizedService *resizedService = [ResizedService resizedServiceWithServerBaseURL:YOUR_RESIZED_CO_URL
-                            key:YOUR_RESIZED_SERVICE_KEY];
+ResizedService *resizedService = [ResizedService resizedServiceWithServerBaseURL:YOUR_RESIZED_CO_SERVICE_URL
+                            key:YOUR_RESIZED_CO_SERVICE_KEY];
 
 //Get URL for resized Image from URL
 NSString *resizedImageURL = [resizedService uriForImage:IMAGE_TO_RESIZE_URL withSize:NEW_SIZE];
