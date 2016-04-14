@@ -43,15 +43,23 @@
         return nil;
     }
     
-    if(size.width <= 0 && size.height <= 0){
+    if (CGSizeEqualToSize(size, CGSizeZero)) {
+        return imageUrl;
+    }
+    
+    if(size.width < 0 || size.height < 0){
+        return imageUrl;
+    }
+    
+    if(size.width == 0 && size.height == 0){
         return imageUrl;
     }
     
     NSString* data = @"";
     
     NSMutableDictionary* mediaRequest = [NSMutableDictionary new];
-    [mediaRequest setObject:imageUrl forKey:@"url"];
     
+    [mediaRequest setObject:imageUrl forKey:@"url"];
     [mediaRequest setObject: size.width > 0 ? [NSNumber numberWithInt:size.width] : [NSNull null] forKey:@"width"];
     [mediaRequest setObject: size.height > 0 ? [NSNumber numberWithInt:size.height] : [NSNull null] forKey:@"height"];
     
@@ -64,9 +72,7 @@
     jsonData = [NSJSONSerialization dataWithJSONObject:encodedData options:0 error:nil];
     data = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     
-    NSString* result = [NSString stringWithFormat:@"%@%@",_serverBaseURL,[data base64EncodedString]];
-    
-    return result;
+    return [_serverBaseURL stringByAppendingString:[data base64EncodedString]];
 }
 
 @end
