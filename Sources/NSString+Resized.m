@@ -12,9 +12,9 @@
 
 @implementation NSString (Resized)
 
-- (NSString *)sha1WithKey:(NSString *)key
+- (NSString *)sha1WithKey:(NSString *)key secret:(NSString *)secret
 {
-    NSString* input =[NSString stringWithFormat:@"%@%@", key, self];
+    NSString* input =[NSString stringWithFormat:@"%@%@%@", key, secret, self];
     
     const char *cstr = [input cStringUsingEncoding:NSUTF8StringEncoding];
     NSData *data = [NSData dataWithBytes:cstr length:input.length];
@@ -36,19 +36,6 @@
 {
     NSData *data = [self dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
     return [data base64EncodedString];
-}
-
-- (BOOL)isEmpty
-{
-    if (self == nil) {
-        return YES;
-    }
-    
-    if ([self stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]].length == 0) {
-        return YES;
-    }
-    
-    return NO;
 }
 
 @end

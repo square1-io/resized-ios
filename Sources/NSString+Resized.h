@@ -10,8 +10,7 @@
 
 @interface NSString (Resized)
 
-- (NSString *)sha1WithKey:(NSString *)key;
+- (NSString *)sha1WithKey:(NSString *)key secret:(NSString *)secret;
 - (NSString *)base64EncodedString;
-- (BOOL)isEmpty;
 
 @end

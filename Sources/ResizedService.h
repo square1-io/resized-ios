@@ -11,26 +11,17 @@
 @interface ResizedService : NSObject
 
 
-+ (instancetype)resizedServiceWithServerBaseURL:(NSString *)url
-                                            key:(NSString *)key;
+@property (nonatomic) NSString * _Nonnull host;
+@property (nonatomic) NSString * _Nullable defaultImageURL;
 
-+ (instancetype)resizedServiceWithServerBaseURL:(NSString *)url
-                                            key:(NSString *)key
-                                    placeholder:(NSString *)placeholderURL;
++ (instancetype _Nullable)serviceWithKey:(NSString * _Nonnull)key
+                        secret:(NSString * _Nonnull)secret;
 
-- (instancetype)initWithServerBaseURL:(NSString *)url
-                                  key:(NSString *)key;
+- (instancetype _Nullable)initWithKey:(NSString * _Nonnull)key
+                     secret:(NSString * _Nonnull)secret;
 
-- (instancetype)initWithServerBaseURL:(NSString *)url
-                                  key:(NSString *)key
-                          placeholder:(NSString *)placeholderURL;
-
-- (NSString *)uriForImage:(NSString *)imageURL
+- (NSString * _Nullable)resizeImage:(NSString * _Nonnull)imageURL
                  withSize:(CGSize)size;
 
-- (NSString *)uriForImage:(NSString *)imageURL
-                 withSize:(CGSize)size
-              placeholder:(NSString *)placeholderURL;
-;
 
 @end

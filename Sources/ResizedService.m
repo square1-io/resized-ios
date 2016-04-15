@@ -9,121 +9,98 @@
 #import "ResizedService.h"
 #import "NSString+Resized.h"
 
+#define kDefaultHost @"https://img.resized.co/"
+
 @interface ResizedService()
 
-@property NSString *serverBaseURL;
 @property NSString *key;
-@property NSString *placeholderURL;
+@property NSString *secret;
 
 @end
 
 @implementation ResizedService
 
-+ (instancetype)resizedServiceWithServerBaseURL:(NSString *)url
-                                            key:(NSString *)key
++ (instancetype)serviceWithKey:(NSString *)key
+                        secret:(NSString *)secret
 {
-    return [ResizedService resizedServiceWithServerBaseURL:url
-                                                       key:key
-                                               placeholder:nil];
+    return [[ResizedService alloc] initWithKey:key secret:secret];
 }
 
-+ (instancetype)resizedServiceWithServerBaseURL:(NSString *)url
-                                            key:(NSString *)key
-                                    placeholder:(NSString *)placeholderURL
-{
-    return [[ResizedService alloc] initWithServerBaseURL:url
-                                                     key:key
-                                             placeholder:placeholderURL];
-}
 
-- (instancetype)initWithServerBaseURL:(NSString *)url
-                                  key:(NSString *)key
-{
-    return [self initWithServerBaseURL:url
-                                   key:key
-                           placeholder:nil];
-}
-
-- (instancetype)initWithServerBaseURL:(NSString *)url
-                                  key:(NSString *)key
-                          placeholder:(NSString *)placeholderURL
+- (instancetype)initWithKey:(NSString *)key
+                     secret:(NSString *)secret
 {
     if (self = [super init]) {
-        _serverBaseURL = url;
+        _host = kDefaultHost;
         _key = key;
-        _placeholderURL = placeholderURL;
+        _secret = secret;
     }
     
     return self;
 }
 
-- (NSString*)uriForImage:(NSString*)imageUrl
-                withSize:(CGSize)size
+- (NSString *)resizeImage:(NSString *)imageURL
+                 withSize:(CGSize)size
 {
-    return [self uriForImage:imageUrl withSize:size placeholder:nil];
-}
-
-- (NSString*)uriForImage:(NSString*)imageUrl
-                withSize:(CGSize)size
-             placeholder:(NSString *)placeholderURL
-{
-    
-    if (_serverBaseURL == nil || _key == nil) {
-        return [self placeholderIfSupplied:placeholderURL];
+    // Check basic params
+    if (_host == nil || _key == nil || _secret == nil) {
+        return nil;
     }
     
-    if([imageUrl length] == 0){
-        return [self placeholderIfSupplied:placeholderURL];
+    // Check input imageURL. If URL is malformed then use failover image
+    if(![self validURL:imageURL]){
+        imageURL = _defaultImageURL;
     }
     
-    if (CGSizeEqualToSize(size, CGSizeZero)) {
-        return imageUrl;
-    }
-    
-    if(size.width < 0 || size.height < 0){
-        return imageUrl;
-    }
-    
-    if(size.width == 0 && size.height == 0){
-        return imageUrl;
-    }
-    
+    // Set params on media request (imageURL, width and height)
     NSMutableDictionary* mediaRequest = [NSMutableDictionary new];
-    [mediaRequest setObject:imageUrl forKey:@"url"];
+    [mediaRequest setObject:imageURL forKey:@"url"];
     [mediaRequest setObject: size.width > 0 ? [NSNumber numberWithInt:size.width] : [NSNull null] forKey:@"width"];
     [mediaRequest setObject: size.height > 0 ? [NSNumber numberWithInt:size.height] : [NSNull null] forKey:@"height"];
     
+    // Transform params dictionary to data object...
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:mediaRequest
                                                        options:0
                                                          error:nil];
-    NSString *data = [[NSString alloc] initWithData:jsonData
-                                           encoding:NSUTF8StringEncoding];
+    //...and data object into string
+    NSString *stringData = [[NSString alloc] initWithData:jsonData
+                                                 encoding:NSUTF8StringEncoding];
     
-    NSString* hash = [data sha1WithKey:_key];
+    // Generate hash encoding "key + secret + stringData" with SHA1
+    NSString* hash = [stringData sha1WithKey:_key secret:_secret];
     
-    NSDictionary* encodedData = @{@"data":data,
-                                  @"hash":hash};
+    // Generate URI
+    NSDictionary* encodedData = @{@"data":stringData, @"hash":hash};
     
     jsonData = [NSJSONSerialization dataWithJSONObject:encodedData
                                                options:0
                                                  error:nil];
-    data = [[NSString alloc] initWithData:jsonData
+    
+    stringData = [[NSString alloc] initWithData:jsonData
                                  encoding:NSUTF8StringEncoding];
     
-    return [_serverBaseURL stringByAppendingString:[data base64EncodedString]];
+    NSString *uri = [stringData base64EncodedString];
+    
+    // Compose request URL
+    NSURL *requestURL = [NSURL URLWithString:_host];
+    requestURL = [requestURL URLByAppendingPathComponent:_key];
+    requestURL = [requestURL URLByAppendingPathComponent:uri];
+    
+    // Return request URL
+    return requestURL.absoluteString;
 }
 
-- (NSString *)placeholderIfSupplied:(NSString *)placeholder
+- (BOOL)validURL:(NSString *)stringURL
 {
-    if (!placeholder.isEmpty) {
-        return placeholder;
+    NSURL *url = [NSURL URLWithString:stringURL];
+    
+    if (url && url.scheme && url.host) {
+        return YES;
+    } else {
+        return NO;
     }
     
-    if (!_placeholderURL.isEmpty) {
-        return _placeholderURL;
-    }
     
-    return nil;
 }
 
 @end
