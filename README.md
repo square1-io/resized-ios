@@ -14,23 +14,19 @@ pod 'Resized'
 
 ````objective-c
 //Initialize...
-ResizedService *resizedService = [ResizedService resizedServiceWithServerBaseURL:YOUR_RESIZED_CO_SERVICE_URL
-                                                                             key:YOUR_RESIZED_CO_SERVICE_KEY];
+ResizedService *resizedService = [ResizedService serviceWithKey:YOUR_RESIZED_CO_SERVICE_KEY
+                                                         secret:YOUR_RESIZED_CO_SERVICE_SECRET];
 
-//...or initialize with placeholder URL
-ResizedService *resizedService = [ResizedService resizedServiceWithServerBaseURL:YOUR_RESIZED_CO_SERVICE_URL
-                                                                             key:YOUR_RESIZED_CO_SERVICE_KEY
-                                                                     placeholder:YOUR_PLACEHOLDER_URL];
+//Override host if applicable (optional)
+resizedService.host = @"https://img.resized.co";
 
+//Set the default failover image (optional)
+resizedService.defaultImageURL = @"http:/www.example.com/no-image.jpg";
 
 //Get URL for resized Image from URL
-NSString *resizedImageURL = [resizedService uriForImage:IMAGE_TO_RESIZE_URL
+NSString *resizedImageURL = [resizedService resizeImage:IMAGE_TO_RESIZE_URL
                                                withSize:NEW_SIZE];
 
-//And you can use a specific placeholder as a wrong resizing fallback
-NSString *resizedImageURL = [resizedService uriForImage:IMAGE_TO_RESIZE_URL
-                                               withSize:NEW_SIZE
-                                            placeholder:YOUR_PLACEHOLDER_URL];                                      
 ````
 
 # License
