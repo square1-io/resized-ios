@@ -38,4 +38,17 @@
     return [data base64EncodedString];
 }
 
+- (BOOL)isEmpty
+{
+    if (self == nil) {
+        return YES;
+    }
+    
+    if ([self stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]].length == 0) {
+        return YES;
+    }
+    
+    return NO;
+}
+
 @end

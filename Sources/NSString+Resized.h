@@ -12,5 +12,6 @@
 
 - (NSString *)sha1WithKey:(NSString *)key;
 - (NSString *)base64EncodedString;
+- (BOOL)isEmpty;
 
 @end
