@@ -1,5 +1,5 @@
 # Resized-iOS
-This is the iOS client for resized.co, a realtime image resize manipulation service.
+This is an iOS client for resized.co, a realtime image resize manipulation service.
 
 # Install
 
@@ -12,13 +12,25 @@ pod 'Resized'
 ````
 # Usage
 
-````
-//Initialize
+````objective-c
+//Initialize...
 ResizedService *resizedService = [ResizedService resizedServiceWithServerBaseURL:YOUR_RESIZED_CO_SERVICE_URL
-                            key:YOUR_RESIZED_CO_SERVICE_KEY];
+                                                                             key:YOUR_RESIZED_CO_SERVICE_KEY];
+
+//...or initialize with placeholder URL
+ResizedService *resizedService = [ResizedService resizedServiceWithServerBaseURL:YOUR_RESIZED_CO_SERVICE_URL
+                                                                             key:YOUR_RESIZED_CO_SERVICE_KEY
+                                                                     placeholder:YOUR_PLACEHOLDER_URL];
+
 
 //Get URL for resized Image from URL
-NSString *resizedImageURL = [resizedService uriForImage:IMAGE_TO_RESIZE_URL withSize:NEW_SIZE];
+NSString *resizedImageURL = [resizedService uriForImage:IMAGE_TO_RESIZE_URL
+                                               withSize:NEW_SIZE];
+
+//And you can use a specific placeholder as a wrong resizing fallback
+NSString *resizedImageURL = [resizedService uriForImage:IMAGE_TO_RESIZE_URL
+                                               withSize:NEW_SIZE
+                                            placeholder:YOUR_PLACEHOLDER_URL];                                      
 ````
 
 # License
